@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#7a1d2b">
-  <title>Electoral Roll Search</title>
+  <title>Voter Roll Search</title>
   <style>
     :root{--ink:#20232a;--muted:#697180;--line:#e5e7eb;--paper:#fff;--canvas:#f4f5f7;--red:#8b1e2d;--red2:#f8e9ec;--green:#18764a;--green2:#e8f5ee;--amber:#946200;--amber2:#fff5d9}
     *{box-sizing:border-box}body{margin:0;background:var(--canvas);color:var(--ink);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
@@ -25,33 +25,38 @@
   </style>
 </head>
 <body>
-  <header><div class="wrap"><h1>Electoral Roll Search</h1><p>Search voter entries by name, EPIC number, serial number, polling centre or part.</p></div></header>
+  <header><div class="wrap"><h1>Voter Roll Search</h1><p>Search the 2026 electoral rolls by name, EPIC number, serial number or polling centre.</p></div></header>
   <main>
     <section class="panel search-panel" aria-label="Search filters">
       <div class="controls">
         <div class="query"><label for="q">Search terms</label><input id="q" type="search" placeholder="e.g. voter name or EPIC number" autocomplete="off"></div>
-        <div><label for="part">Part</label><select id="part"><option value="">All parts</option></select></div>
-        <div><label for="status">Entry status</label><select id="status"><option value="">All entries</option><option>Active</option><option>Deleted</option></select></div>
+        <div><label for="part">Voting Booth</label><select id="part"><option value="">All voting booths</option></select></div>
+        <div><label for="status">Entry status</label><select id="status"><option value="">All entries</option><option>Active</option><option>Deleted</option><option value="Review">Needs review</option></select></div>
         <button id="searchBtn" type="button">Search</button>
       </div>
-      <p class="hint">Search is run across the uploaded rolls. Deleted entries remain included unless you filter them out.</p>
+      <p class="hint">Deleted entries are included unless you filter them out. Results open the matching page in the source PDF.</p>
     </section>
     <div class="summary"><div id="counts">Loading index…</div><div id="loadState"></div></div>
     <section id="results" aria-live="polite"><div class="panel loading">Loading voter index…</div></section>
-    <p class="footer">OCR can misread names or EPIC characters. Check the source PDF for confirmation, especially for entries marked “Review”.</p>
+    <p class="footer">OCR can misread names or EPIC characters. Some serial numbers were assigned from their position in the roll when the printed number was unclear. Deleted status uses the printed E/S/R/M/Q code; check the source PDF to confirm important details.</p>
   </main>
   <script>
     const DRIVE_FILES = {
-      1: "https://drive.google.com/file/d/1L2xFqsPwBoBn9BJHgMFxj_687yCB-LPq/view?usp=drive_link",
-      2: "https://drive.google.com/file/d/1CA0b10MVsgwEkno84mMkUpbcbyWoK6HX/view?usp=drive_link",
-      3: "https://drive.google.com/file/d/1MU2a55cKuZJCFn1Cv4pzLAhKXysBvpQo/view?usp=drive_link",
-      4: "https://drive.google.com/file/d/1viwWB9ALaTLhc8bqihtl7OK8AfvstMte/view?usp=drive_link",
-      5: "https://drive.google.com/file/d/1EMr-yy9IO0jFYwvtPBgVn9rgDxCGHIel/view?usp=drive_link",
-      6: "https://drive.google.com/file/d/1d25kvDdmMDFmpi6C7LGIKxH6-TJowf9t/view?usp=drive_link",
-      7: "https://drive.google.com/file/d/1pLLmkCRL09ZJOR2eQi9k8Rj5L6Dd6Omm/view?usp=drive_link",
-      8: "https://drive.google.com/file/d/1R9gGmDrzlNbjjxRYu8IoYI-Ob8vcZTdt/view?usp=drive_link",
-      9: "https://drive.google.com/file/d/17PLnD6EPcefGCzklrgcyeSkkxx2G9gAo/view?usp=drive_link",
-      10: "https://drive.google.com/file/d/10MbpiE8yddw_J8dHRu6JWPsXZV-FW9Rm/view?usp=drive_link"
+      434: "https://drive.google.com/file/d/1h9SUTQnaEV49cYeOtRKLMOcOB69WZpov/view?usp=drive_link",
+      435: "https://drive.google.com/file/d/1Est3oMP1H2KKij1mlbj0iKdT9Kks_hj-/view?usp=drive_link",
+      436: "https://drive.google.com/file/d/14O1EnbCjApkXp2XWd-eA_3BdghkmrJMO/view?usp=drive_link",
+      437: "https://drive.google.com/file/d/1GIY5zgsi379S-D8xOu1fACEFJs_OtWEz/view?usp=drive_link",
+      438: "https://drive.google.com/file/d/1I4am_fWK7ales44f0VELIPwT1643EW6m/view?usp=drive_link",
+      439: "https://drive.google.com/file/d/1pdifZied2BizhgnbXhB3tmIiirLMsGLk/view?usp=drive_link",
+      440: "https://drive.google.com/file/d/14tGhTagMXMcXTXi0i-0RiovBjKT1YmtD/view?usp=drive_link",
+      441: "https://drive.google.com/file/d/1HD1LYWd5QZQBXK2k9mPP1bfYwSJ9DIRB/view?usp=drive_link",
+      442: "https://drive.google.com/file/d/1c19gj3YzbB0uRckr_nlOXCxr1RpvEMFu/view?usp=drive_link",
+      449: "https://drive.google.com/file/d/16gBSTcVUPVxg44nEIY4T1QU8VJlBR0qu/view?usp=drive_link",
+      447: "https://drive.google.com/file/d/1PxkSI-Q4yXCNiCJC69rzkfKOLU-8Ibju/view?usp=drive_link",
+      448: "https://drive.google.com/file/d/1mHTrwwv8hQq911QkEDFrm2ymcj_Dnh-k/view?usp=drive_link",
+      450: "https://drive.google.com/file/d/14sg9poEFUv3x1KiJ2NkoOxO2nODPwKZx/view?usp=drive_link",
+      451: "https://drive.google.com/file/d/1jK5D5aYiW9hhbpcZAoCyey6OIZ571Oti/view?usp=drive_link",
+      452: "https://drive.google.com/file/d/1hMsm2-121gAufBOjEc8cnBgMFhVZfPql/view?usp=drive_link"
     };
     const state = { records: [], loaded: false };
     const q = document.getElementById('q');
@@ -78,9 +83,10 @@
     function card(r) {
       const badge = r.status === 'Deleted' ? '<span class="badge deleted">Deleted</span>' : '<span class="badge active">Active</span>';
       const review = r.reviewRequired ? '<span class="badge review">Review</span>' : '';
+      const inferred = r.serialInferred ? '<span class="badge review">Serial inferred</span>' : '';
       const url = drivePageUrl(r.part,r.pdfPage);
       const link = url ? `<a href="${esc(url)}" target="_blank" rel="noopener">Open source PDF</a>` : `<span class="src-note">Drive link to be added</span>`;
-      return `<article class="panel result"><div><div class="name-row"><span class="person">${esc(r.name || 'Name not extracted')}</span>${badge}${review}</div><div class="details">${field('Serial number',r.serial)}${field('EPIC',r.epic || r.epicOCR)}${field('Part',r.part)}${field('Age / gender',[r.age,r.gender].filter(Boolean).join(' / '))}${field('Relative name',r.relativeName)}${field('House number',r.houseNumber)}${field('Polling centre',r.pollingCenter)}${field('PDF page',r.pdfPage)}</div></div><div class="source">${link}<div class="src-note">${esc(r.sourcePdf || '')}</div></div></article>`;
+      return `<article class="panel result"><div><div class="name-row"><span class="person">${esc(r.name || 'Name not extracted')}</span>${badge}${review}${inferred}</div><div class="details">${field('Serial number',r.serial)}${field('EPIC',r.epic || r.epicOCR)}${field('Voting Booth',r.sourcePdf)}${field('Age / gender',[r.age,r.gender].filter(Boolean).join(' / '))}${field('Relative name',r.relativeName)}${field('House number',r.houseNumber)}${field('Polling centre',r.pollingCenter)}${field('Deletion code',r.status === 'Deleted' ? r.statusCode : '')}${field('PDF page',r.pdfPage)}</div></div><div class="source">${link}<div class="src-note">${esc(r.sourcePdf || '')}</div></div></article>`;
     }
     function runSearch() {
       if (!state.loaded) return;
@@ -88,8 +94,9 @@
       const part = partSelect.value;
       const status = statusSelect.value;
       const matched = state.records.filter(r => {
-        if (part && String(r.part) !== part) return false;
-        if (status && r.status !== status) return false;
+        if (part && r.sourcePdf !== part) return false;
+        if (status && status !== 'Review' && r.status !== status) return false;
+        if (status === 'Review' && !r.reviewRequired) return false;
         const corpus = normalize(r.searchText || [r.serial,r.epic,r.epicOCR,r.name,r.relativeName,r.pollingCenter,r.part].join(' '));
         return terms.every(term => corpus.includes(term));
       });
@@ -100,7 +107,7 @@
     }
     async function init() {
       try {
-        const responses = await Promise.all(Array.from({length:10},(_,i)=>fetch(`./voter-index-part-${i+1}.json`)));
+        const responses = await Promise.all(Array.from({length:15},(_,i)=>fetch(`./voter-index-part-${i+1}.json`)));
         const failed = responses.find(r => !r.ok);
         if (failed) throw new Error(`Index request failed (${failed.status})`);
         const parts = await Promise.all(responses.map(r=>r.json()));
@@ -112,7 +119,7 @@
           searchText:[a[0],a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],data.part,data.centres[a[11]]].join(' ')
         })));
         state.loaded = true;
-        [...new Set(state.records.map(r => r.part).filter(Boolean))].sort((a,b)=>a-b).forEach(p => partSelect.add(new Option(`Part ${p}`,String(p))));
+        [...new Map(state.records.map(r => [r.sourcePdf,r.part]).filter(([name]) => name))].sort((a,b)=>a[1]-b[1]).forEach(([name]) => partSelect.add(new Option(name,name)));
         const active = state.records.filter(r => r.status === 'Active').length;
         const deleted = state.records.length - active;
         loadState.textContent = `${active.toLocaleString()} active · ${deleted.toLocaleString()} deleted`;
