@@ -14,6 +14,6 @@ Upload the files to the root of the `VoterlistSearch/voterlistsearch.github.io` 
 
 ## Accuracy notes
 
-The index includes the main roll and additions pages. Some serial numbers were assigned from their position in the roll when OCR did not reliably capture the printed number; these results carry a **Serial inferred** badge. A **Review** badge means key searchable fields were missing from the OCR text. Deleted status is detected from the printed E/S/R/M/Q marker in the card status area. OCR can still miss or misread details, so use the linked PDF to confirm a result.
+The index includes the main roll and additions pages. Some serial numbers were assigned from their position in the roll when OCR did not reliably capture the printed number; these results carry a **Serial inferred** badge. A **Review** badge means key searchable fields were missing from the OCR text. Deleted labels in Parts 447, 448, 450, 451, and 452 were visually checked against the source PDFs. OCR can still miss or misread details, so use the linked PDF to confirm a result.
 
-The PDFs are not copied into this package. Their Drive links must remain viewable by the portal's audience.
+The data is reproduced from electoral roll PDFs downloaded from the Election Commission of India (ECI) website. OCR and indexing may contain errors; verify details in the linked PDF. The PDFs are not copied into this package. Their Drive links must remain viewable by the portal's audience.

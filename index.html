@@ -8,8 +8,8 @@
   <style>
     :root{--ink:#20232a;--muted:#697180;--line:#e5e7eb;--paper:#fff;--canvas:#f4f5f7;--red:#8b1e2d;--red2:#f8e9ec;--green:#18764a;--green2:#e8f5ee;--amber:#946200;--amber2:#fff5d9}
     *{box-sizing:border-box}body{margin:0;background:var(--canvas);color:var(--ink);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-    header{background:linear-gradient(120deg,#761a29,#a8323f);color:white;padding:28px 20px 24px}
-    .wrap{max-width:1120px;margin:auto}h1{font-size:clamp(24px,4vw,34px);margin:0 0 6px;letter-spacing:-.03em}header p{margin:0;color:#f5dfe2}
+    header{position:sticky;top:0;z-index:20;background:linear-gradient(120deg,rgba(118,26,41,.97),rgba(168,50,63,.96));backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:white;padding:10px 20px 12px;box-shadow:0 4px 16px rgba(20,24,33,.18);border-bottom:1px solid rgba(255,255,255,.15)}
+    .wrap{max-width:1120px;margin:auto}h1{font-size:clamp(20px,3vw,26px);margin:0 0 2px;letter-spacing:-.03em}header p{margin:0;color:#f5dfe2;font-size:12px}
     main{max-width:1120px;margin:22px auto;padding:0 16px 40px}.panel{background:var(--paper);border:1px solid var(--line);border-radius:14px;box-shadow:0 3px 14px #1f29370a}
     .search-panel{padding:18px}.controls{display:grid;grid-template-columns:minmax(220px,1fr) 170px 170px auto;gap:10px;align-items:end}
     label{display:block;color:#535b68;font-size:12px;font-weight:700;margin:0 0 6px}
@@ -19,9 +19,9 @@
     #results{display:grid;gap:10px}.result{padding:15px 16px;display:grid;grid-template-columns:1fr auto;gap:10px}.name-row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.person{font-size:17px;font-weight:750}.badge{font-size:11px;line-height:1;border-radius:99px;padding:6px 9px;font-weight:750}.active{background:var(--green2);color:var(--green)}.deleted{background:#fde7e7;color:#9d2020}.review{background:var(--amber2);color:var(--amber)}
     .details{display:grid;grid-template-columns:repeat(4,minmax(100px,1fr));gap:8px 18px;margin-top:10px}.detail small{display:block;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.04em}.detail span{overflow-wrap:anywhere}
     .source{align-self:center;text-align:right;min-width:145px}.source a{display:inline-block;color:var(--red);font-weight:700;text-decoration:none;border:1px solid #e6c8ce;border-radius:8px;padding:8px 11px}.source a:hover{background:var(--red2)}.source .src-note{font-size:11px;color:var(--muted);margin-top:5px}
-    .empty,.loading{padding:34px;text-align:center;color:var(--muted)}.footer{font-size:12px;color:var(--muted);margin:14px 2px}
+    .empty,.loading{padding:34px;text-align:center;color:var(--muted)}.disclaimer{font-size:12px;color:#535b68;line-height:1.5;margin:12px 2px;padding:10px 12px;border:1px solid #e6c8ce;border-left:3px solid var(--red);border-radius:8px;background:#fff}.footer{font-size:12px;color:var(--muted);margin:14px 2px}
     @media(max-width:800px){.controls{grid-template-columns:1fr 1fr}.query{grid-column:1/-1}button{width:100%}.details{grid-template-columns:1fr 1fr}}
-    @media(max-width:520px){header{padding:22px 16px}main{margin-top:14px;padding:0 10px 28px}.search-panel{padding:13px}.controls{grid-template-columns:1fr}.query{grid-column:auto}.result{grid-template-columns:1fr}.source{text-align:left;min-width:0}.details{gap:8px 12px}.summary{align-items:flex-start;flex-direction:column}}
+    @media(max-width:520px){header{padding:9px 14px 10px}main{margin-top:14px;padding:0 10px 28px}.search-panel{padding:13px}.controls{grid-template-columns:1fr}.query{grid-column:auto}.result{grid-template-columns:1fr}.source{text-align:left;min-width:0}.details{gap:8px 12px}.summary{align-items:flex-start;flex-direction:column}}
   </style>
 </head>
 <body>
@@ -36,27 +36,28 @@
       </div>
       <p class="hint">Deleted entries are included unless you filter them out. Results open the matching page in the source PDF.</p>
     </section>
+    <p class="disclaimer"><strong>Source and disclaimer:</strong> This portal reproduces data from electoral roll PDFs downloaded from the Election Commission of India (ECI) website. OCR and indexing may contain errors; please confirm details in the linked source PDF.</p>
     <div class="summary"><div id="counts">Loading index…</div><div id="loadState"></div></div>
     <section id="results" aria-live="polite"><div class="panel loading">Loading voter index…</div></section>
-    <p class="footer">OCR can misread names or EPIC characters. Some serial numbers were assigned from their position in the roll when the printed number was unclear. Deleted status uses the printed E/S/R/M/Q code; check the source PDF to confirm important details.</p>
+    <p class="footer">OCR can misread names or EPIC characters. Some serial numbers were assigned from their position in the roll when the printed number was unclear. Deleted badges are based on the visible deletion marks in the source PDFs; please confirm important details in the linked PDF.</p>
   </main>
   <script>
     const DRIVE_FILES = {
       434: "https://drive.google.com/file/d/1h9SUTQnaEV49cYeOtRKLMOcOB69WZpov/view?usp=drive_link",
-      435: "https://drive.google.com/file/d/1Est3oMP1H2KKij1mlbj0iKdT9Kks_hj-/view?usp=drive_link",
-      436: "https://drive.google.com/file/d/14O1EnbCjApkXp2XWd-eA_3BdghkmrJMO/view?usp=drive_link",
-      437: "https://drive.google.com/file/d/1GIY5zgsi379S-D8xOu1fACEFJs_OtWEz/view?usp=drive_link",
-      438: "https://drive.google.com/file/d/1I4am_fWK7ales44f0VELIPwT1643EW6m/view?usp=drive_link",
-      439: "https://drive.google.com/file/d/1pdifZied2BizhgnbXhB3tmIiirLMsGLk/view?usp=drive_link",
-      440: "https://drive.google.com/file/d/14tGhTagMXMcXTXi0i-0RiovBjKT1YmtD/view?usp=drive_link",
-      441: "https://drive.google.com/file/d/1HD1LYWd5QZQBXK2k9mPP1bfYwSJ9DIRB/view?usp=drive_link",
-      442: "https://drive.google.com/file/d/1c19gj3YzbB0uRckr_nlOXCxr1RpvEMFu/view?usp=drive_link",
-      449: "https://drive.google.com/file/d/16gBSTcVUPVxg44nEIY4T1QU8VJlBR0qu/view?usp=drive_link",
+      435: "https://drive.google.com/file/d/14O1EnbCjApkXp2XWd-eA_3BdghkmrJMO/view?usp=drive_link",
+      436: "https://drive.google.com/file/d/1GIY5zgsi379S-D8xOu1fACEFJs_OtWEz/view?usp=drive_link",
+      437: "https://drive.google.com/file/d/1I4am_fWK7ales44f0VELIPwT1643EW6m/view?usp=drive_link",
+      438: "https://drive.google.com/file/d/1pdifZied2BizhgnbXhB3tmIiirLMsGLk/view?usp=drive_link",
+      439: "https://drive.google.com/file/d/14tGhTagMXMcXTXi0i-0RiovBjKT1YmtD/view?usp=drive_link",
+      440: "https://drive.google.com/file/d/1HD1LYWd5QZQBXK2k9mPP1bfYwSJ9DIRB/view?usp=drive_link",
+      441: "https://drive.google.com/file/d/1c19gj3YzbB0uRckr_nlOXCxr1RpvEMFu/view?usp=drive_link",
+      442: "https://drive.google.com/file/d/16gBSTcVUPVxg44nEIY4T1QU8VJlBR0qu/view?usp=drive_link",
+      449: "https://drive.google.com/file/d/1Est3oMP1H2KKij1mlbj0iKdT9Kks_hj-/view?usp=drive_link",
       447: "https://drive.google.com/file/d/1PxkSI-Q4yXCNiCJC69rzkfKOLU-8Ibju/view?usp=drive_link",
-      448: "https://drive.google.com/file/d/1mHTrwwv8hQq911QkEDFrm2ymcj_Dnh-k/view?usp=drive_link",
-      450: "https://drive.google.com/file/d/14sg9poEFUv3x1KiJ2NkoOxO2nODPwKZx/view?usp=drive_link",
-      451: "https://drive.google.com/file/d/1jK5D5aYiW9hhbpcZAoCyey6OIZ571Oti/view?usp=drive_link",
-      452: "https://drive.google.com/file/d/1hMsm2-121gAufBOjEc8cnBgMFhVZfPql/view?usp=drive_link"
+      448: "https://drive.google.com/file/d/14sg9poEFUv3x1KiJ2NkoOxO2nODPwKZx/view?usp=drive_link",
+      450: "https://drive.google.com/file/d/1jK5D5aYiW9hhbpcZAoCyey6OIZ571Oti/view?usp=drive_link",
+      451: "https://drive.google.com/file/d/1hMsm2-121gAufBOjEc8cnBgMFhVZfPql/view?usp=drive_link",
+      452: "https://drive.google.com/file/d/1mHTrwwv8hQq911QkEDFrm2ymcj_Dnh-k/view?usp=drive_link"
     };
     const state = { records: [], loaded: false };
     const q = document.getElementById('q');
